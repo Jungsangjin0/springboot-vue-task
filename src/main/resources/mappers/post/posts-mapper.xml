@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sj.board.dao.PostsMapper">
+    
+    <resultMap id="posts" type="PostsDto">
+        <id column="POSTS_ID" property="postsId"/>
+        <result column="REG_USER_ID" property="regUserId"/>
+        <result column="MODIFY_USER_ID" property="modifyUserId"/>
+        <result column="TITLE" property="title"/>
+        <result column="CONTENT" property="content"/>
+        <result column="REG_DATE" property="regDate"/>
+        <result column="MODIFY_DATE" property="modifyDate"/>
+        <result column="STATUS" property="status"/>
+    </resultMap>
+    
+    <select id="findList" resultMap="posts" parameterType="SearchDto">
+        SELECT
+               POSTS_ID
+             , REG_USER_ID
+             , MODIFY_USER_ID
+             , TITLE
+             , CONTENT
+             , REG_DATE
+             , MODIFY_DATE
+             , STATUS
+        FROM POSTS
+        <where>
+        <!--조건 검색 -->
+        <choose>
+            <when test="keyword != null and !keyword.equals('')">
+                <!--조건 / 기간-->
+                <if test="startDate != null and !startDate.equals('') and endDate != null and !endDate.equals('')">
+                    <!-- 조건 : title -->
+                    <if test="keyword.equals('title')">
+                        AND BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD') AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
+                        AND INSTR(TITLE, #{word}) > 0
+                    </if>
+                    <if test="keyword.equals('content')">
+
+                    </if>
+                </if>
+
+            </when>
+            <!--조건 -->
+            <when test="">
+
+            </when>
+        </choose>
+        <!--기간 만 검색 -->
+        </where>
+    </select>
+</mapper>
