@@ -14,7 +14,7 @@ public interface PostsMapper {
     List<PostsDto> findList(SearchDto search);
 
     /* 상세 조회 */
-    PostsDto findById(@Param("postsId") Long postsId);
+    PostsDto findById(@Param("postsId") long postsId);
 
     /* 등록 */
     Long insertPost(PostsDto post);

@@ -46,9 +46,47 @@
         </foreach>
     </insert>
     
-    <delete id="deleteByPostsId" parameterType="Long">
+    <update id="deleteByPostsId" parameterType="Long">
         UPDATE ATTACHMENT
         SET STATUS = 'DELETED'
         WHERE POSTS_ID = #{postsId}
-    </delete>
+    </update>
+
+    <update id="deleteFile" parameterType="java.util.HashMap">
+        UPDATE ATTACHMENT
+        SET STATUS = 'DELETED'
+        WHERE POSTS_ID = #{postsId}
+        AND FILE_ID = #{fileId}
+    </update>
+
+
+    <select id="findById" parameterType="Long" resultMap="file">
+        SELECT
+               FILE_ID
+             , POSTS_ID
+             , USER_ID
+             , ORIGIN_NAME
+             , SAVE_NAME
+             , FILE_PATH
+             , FILE_EXT
+             , FILE_SIZE
+             , FILE_REG_DATE
+        FROM ATTACHMENT
+        WHERE FILE_ID = #{fileId}
+    </select>
+    
+    <insert id="addFiles" parameterType="java.util.HashMap">
+        INSERT INTO ATTACHMENT(
+        FILE_ID, POSTS_ID, USER_ID
+        , ORIGIN_NAME, SAVE_NAME, FILE_PATH
+        , FILE_EXT, FILE_SIZE, FILE_REG_DATE
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=", ">
+            (FILE_SEQ.NEXTVAL, #{item.postsId}, #{item.userId}
+            ,#{item.originName}, #{item.saveName}, #{item.filePath}
+            ,#{item.fileExt}, #{item.fileSize}, SYSDATE)
+        </foreach>
+    </insert>
+
 </mapper>

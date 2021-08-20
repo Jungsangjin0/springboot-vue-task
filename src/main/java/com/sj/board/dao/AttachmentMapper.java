@@ -17,5 +17,12 @@ public interface AttachmentMapper {
     void deleteByPostsId(@Param("postsId") Long postsId);
 
     /* 파일 삭제 */
+    void deleteFile(Map<String, Object> map);
+
+    /* 파일 검색 */
+    AttachmentDto findById(@Param("fileId")long fileId);
+
+    /* 파일 추가 */
+    void addFiles(Map<String, Object> map);
 
 }
