@@ -4,52 +4,153 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.sj.board.dao.PostsMapper">
-    
+    <cache />
+
     <resultMap id="posts" type="PostsDto">
         <id column="POSTS_ID" property="postsId"/>
         <result column="REG_USER_ID" property="regUserId"/>
         <result column="MODIFY_USER_ID" property="modifyUserId"/>
+        <result column="REG_NAME" property="regName"/>
+        <result column="MODIFY_NAME" property="modifyName"/>
         <result column="TITLE" property="title"/>
         <result column="CONTENT" property="content"/>
         <result column="REG_DATE" property="regDate"/>
         <result column="MODIFY_DATE" property="modifyDate"/>
         <result column="STATUS" property="status"/>
+        <result column="REG_NAME" property="regName"/>
+        <result column="MODIFY_NAME" property="modifyName"/>
+        <collection property="files" javaType="ArrayList" column="POSTS_ID" ofType="AttachmentDto" select="com.sj.board.dao.AttachmentMapper.findByPostsId" />
     </resultMap>
     
     <select id="findList" resultMap="posts" parameterType="SearchDto">
         SELECT
-               POSTS_ID
-             , REG_USER_ID
-             , MODIFY_USER_ID
-             , TITLE
-             , CONTENT
-             , REG_DATE
-             , MODIFY_DATE
-             , STATUS
-        FROM POSTS
-        <where>
+               A.POSTS_ID
+             , B.NAME AS "REG_NAME"
+             , C.NAME AS "MODIFY_NAME"
+             , A.TITLE
+             , A.CONTENT
+             , A.REG_DATE
+             , A.MODIFY_DATE
+             , A.STATUS
+        FROM POSTS A
+        LEFT OUTER JOIN MEMBER B ON(A.REG_USER_ID = B.USER_ID)
+        LEFT OUTER JOIN MEMBER C ON(A.MODIFY_USER_ID = C.USER_ID)
+        WHERE A.STATUS != 'DELETED'
         <!--조건 검색 -->
         <choose>
-            <when test="keyword != null and !keyword.equals('')">
+            <when test="keyword != null and !keyword.equals('') and word != null and !word.equals('') and word != ''">
                 <!--조건 / 기간-->
                 <if test="startDate != null and !startDate.equals('') and endDate != null and !endDate.equals('')">
                     <!-- 조건 : title -->
+                    AND A.REG_DATE BETWEEN  TO_DATE(#{startDate}, 'YYYY-MM-DD') AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
                     <if test="keyword.equals('title')">
-                        AND BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD') AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
-                        AND INSTR(TITLE, #{word}) > 0
+                        AND INSTR(UPPER(TITLE), UPPER(#{word})) > 0
                     </if>
+                    <!-- 조건 : CONTENT-->
                     <if test="keyword.equals('content')">
-
+                        AND INSTR(UPPER(CONTENT), UPPER(#{word})) > 0
+                    </if>
+                    <!--조건 : ALL-->
+                    <if test="keyword.equals('all')">
+                        AND INSTR(UPPER(TITLE), UPPER(#{word})) > 0
+                        OR INSTR(UPPER(CONTENT), UPPER(#{word})) > 0
+                    </if>
+                    <!-- 등록자 -->
+                    <if test="keyword.equals('reg-user')">
+                        AND UPPER(B.NAME) = UPPER(#{word})
+                    </if>
+                    <!-- 수정자 -->
+                    <if test="keyword.equals('modify-user')">
+                        AND UPPER(C.NAME) = UPPER(#{word})
                     </if>
                 </if>
-
+                <!-- 조건 -->
+                <if test="startDate == null or startDate.equals('') and endDate == null or endDate.equals('')">
+                    <!-- 조건 : title -->
+                    <if test="keyword.equals('title')">
+                        AND INSTR(UPPER(TITLE), UPPER(#{word})) > 0
+                    </if>
+                    <!-- 조건 : CONTENT-->
+                    <if test="keyword.equals('content')">
+                        AND INSTR(UPPER(CONTENT), UPPER(#{word})) > 0
+                    </if>
+                    <!--조건 : ALL-->
+                    <if test="keyword.equals('all')">
+                        AND INSTR(UPPER(TITLE), UPPER(#{word})) > 0
+                        OR INSTR(UPPER(CONTENT), UPPER(#{word})) > 0
+                    </if>
+                    <!-- 등록자 -->
+                    <if test="keyword.equals('reg-user')">
+                        AND UPPER(B.NAME) = UPPER(#{word})
+                    </if>
+                    <!-- 수정자 -->
+                    <if test="keyword.equals('modify-user')">
+                        AND UPPER(C.NAME) = UPPER(#{word})
+                    </if>
+                </if>
             </when>
-            <!--조건 -->
-            <when test="">
-
-            </when>
+            <otherwise>
+                <!--기간-->
+                <if test="startDate != null and !startDate.equals('') and endDate != null and !endDate.equals('')">
+                    AND A.REG_DATE BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD') AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
+                </if>
+            </otherwise>
         </choose>
-        <!--기간 만 검색 -->
-        </where>
+        ORDER BY REG_DATE DESC
     </select>
+
+
+    <select id="findById" parameterType="Long"  resultMap="posts">
+        SELECT
+               A.POSTS_ID
+             , B.NAME AS "REG_NAME"
+             , C.NAME AS "MODIFY_NAME"
+             , A.TITLE
+             , A.CONTENT
+             , A.REG_DATE
+             , A.MODIFY_DATE
+             , A.STATUS
+        FROM POSTS A
+        JOIN MEMBER B ON(A.REG_USER_ID = B.USER_ID)
+        JOIN MEMBER C ON(A.MODIFY_USER_ID = C.USER_ID)
+        WHERE A.STATUS != 'DELETED'
+        AND A.POSTS_ID = #{postsId}
+    </select>
+
+    <insert id="insertPost" parameterType="PostsDto">
+        <selectKey resultType="Long" keyProperty="postsId" order="AFTER">
+            SELECT POSTS_SEQ.CURRVAL AS "postsId" FROM DUAL
+        </selectKey>
+        INSERT INTO POSTS(
+                POSTS_ID, REG_USER_ID, MODIFY_USER_ID
+                , TITLE, CONTENT, REG_DATE
+                , MODIFY_DATE, STATUS
+                 )
+        VALUES(
+            POSTS_SEQ.NEXTVAL, #{regUserId}, #{modifyUserId}
+            , #{title}, #{content}, SYSDATE,
+            SYSDATE, DEFAULT
+            )
+    </insert>
+
+    <update id="deleteById" parameterType="Long">
+        UPDATE POSTS
+        SET STATUS = 'DELETED'
+        WHERE POSTS_ID = #{postsId}
+    </update>
+
+    <update id="updateById" parameterType="PostsDto">
+        UPDATE POSTS
+        <set>
+            <if test="title != null and !title.equals('')">
+                TITLE = #{title},
+            </if>
+            <if test="content != null">
+                CONTENT = #{content},
+            </if>
+            STATUS = 'UPDATED'
+        </set>
+        WHERE POSTS_ID = #{postsId}
+    </update>
+
 </mapper>

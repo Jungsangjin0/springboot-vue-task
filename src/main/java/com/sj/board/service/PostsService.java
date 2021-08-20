@@ -9,4 +9,16 @@ public interface PostsService {
 
     /*전체, 조건 조회*/
     List<PostsDto> findList(SearchDto search);
+
+    /*상세 조회*/
+    PostsDto findById(Long postsId);
+
+    /* 등록 */
+    Long insertPost(PostsDto posts);
+
+    /* 삭제 */
+    void deleteById(Long postsId);
+
+    /* 수정 */
+    Long updateById(Long postsId, PostsDto posts);
 }

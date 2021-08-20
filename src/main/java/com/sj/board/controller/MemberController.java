@@ -28,7 +28,7 @@ public class MemberController {
         if (member == null) {
             return ResponseEntity.status(403).body("아이디 또는 비밀번호가 일치하지 않습니다.");
         } else {
-            session.setAttribute(member.getEmail(), member);
+            session.setAttribute("user", member);
             return ResponseEntity.ok().body(member);
         }
     }

@@ -1,8 +1,11 @@
 package com.sj.board.dto;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SearchDto implements java.io.Serializable{
 
     private String keyword;

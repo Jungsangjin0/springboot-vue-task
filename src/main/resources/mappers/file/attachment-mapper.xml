@@ -4,7 +4,51 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.sj.board.dao.AttachmentMapper">
-    <select id="findById">
-        SELECT * FROM ATTACHMENT
+
+    <resultMap id="file" type="AttachmentDto">
+        <id column="FILE_ID" property="fileId"/>
+        <result column="POSTS_ID" property="postsId"/>
+        <result column="USER_ID" property="userId"/>
+        <result column="ORIGIN_NAME" property="originName"/>
+        <result column="SAVE_NAME" property="saveName"/>
+        <result column="FILE_PATH" property="filePath"/>
+        <result column="FILE_EXT" property="fileExt"/>
+        <result column="FILE_SIZE" property="fileSize"/>
+        <result column="FILE_REG_DATE" property="fileRegDate"/>
+    </resultMap>
+    
+    <select id="findByPostsId" resultMap="file">
+        SELECT
+               FILE_ID
+             , POSTS_ID
+             , USER_ID
+             , ORIGIN_NAME
+             , SAVE_NAME
+             , FILE_PATH
+             , FILE_EXT
+             , FILE_SIZE
+             , FILE_REG_DATE
+        FROM ATTACHMENT
+        WHERE POSTS_ID = #{POSTS_ID}
     </select>
+
+    <insert id="insertFiles" parameterType="java.util.HashMap">
+        INSERT INTO ATTACHMENT(
+                 FILE_ID, POSTS_ID, USER_ID
+               , ORIGIN_NAME, SAVE_NAME, FILE_PATH
+               , FILE_EXT, FILE_SIZE, FILE_REG_DATE
+                    )
+        VALUES
+        <foreach collection="list" item="item" separator=", ">
+            (FILE_SEQ.NEXTVAL, #{postId}, #{item.userId}
+            ,#{item.originName}, #{item.saveName}, #{item.filePath}
+            ,#{item.fileExt}, #{item.fileSize}, SYSDATE)
+        </foreach>
+    </insert>
+    
+    <delete id="deleteByPostsId" parameterType="Long">
+        UPDATE ATTACHMENT
+        SET STATUS = 'DELETED'
+        WHERE POSTS_ID = #{postsId}
+    </delete>
 </mapper>
