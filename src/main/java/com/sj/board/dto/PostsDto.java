@@ -22,4 +22,5 @@ public class PostsDto implements java.io.Serializable{
 
     /* file */
     private List<AttachmentDto> files;
+
 }

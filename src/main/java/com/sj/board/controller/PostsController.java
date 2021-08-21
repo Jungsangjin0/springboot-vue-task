@@ -72,7 +72,8 @@ public class PostsController {
             System.out.println("ext = " + ext);
 
             attachment = AttachmentDto.builder()
-                                      .userId(posts.getModifyUserId())
+                                      .regUserId(posts.getRegUserId())
+                                      .modifyUserId(posts.getRegUserId())
                                       .originName(file.get(i).getOriginalFilename())
                                       .saveName(saveName)
                                       .filePath("path")

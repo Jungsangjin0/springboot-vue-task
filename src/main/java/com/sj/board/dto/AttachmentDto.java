@@ -9,14 +9,16 @@ import java.sql.Date;
 @Builder
 public class AttachmentDto implements java.io.Serializable{
 
-    private Long fileId;
-    private Long postsId;
-    private Long userId;
+    private long fileId;
+    private long postsId;
+    private long regUserId;
+    private long modifyUserId;
     private String originName;
     private String saveName;
     private String filePath;
     private String fileExt;
-    private Long fileSize;
+    private long fileSize;
     private Date fileRegDate;
-
+    private Date fileModifyDate;
+    private String status;
 }

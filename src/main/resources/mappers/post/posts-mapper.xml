@@ -10,8 +10,6 @@
         <id column="POSTS_ID" property="postsId"/>
         <result column="REG_USER_ID" property="regUserId"/>
         <result column="MODIFY_USER_ID" property="modifyUserId"/>
-        <result column="REG_NAME" property="regName"/>
-        <result column="MODIFY_NAME" property="modifyName"/>
         <result column="TITLE" property="title"/>
         <result column="CONTENT" property="content"/>
         <result column="REG_DATE" property="regDate"/>
@@ -21,7 +19,8 @@
         <result column="MODIFY_NAME" property="modifyName"/>
         <collection property="files" javaType="ArrayList" column="POSTS_ID" ofType="AttachmentDto" select="com.sj.board.dao.AttachmentMapper.findByPostsId" />
     </resultMap>
-    
+
+    <!-- 전체 조회 -->
     <select id="findList" resultMap="posts" parameterType="SearchDto">
         SELECT
                A.POSTS_ID
@@ -42,7 +41,7 @@
                 <!--조건 / 기간-->
                 <if test="startDate != null and !startDate.equals('') and endDate != null and !endDate.equals('')">
                     <!-- 조건 : title -->
-                    AND A.REG_DATE BETWEEN  TO_DATE(#{startDate}, 'YYYY-MM-DD') AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
+                    AND A.MODIFY_DATE BETWEEN  TO_DATE(#{startDate}, 'YYYY-MM-DD') AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
                     <if test="keyword.equals('title')">
                         AND INSTR(UPPER(TITLE), UPPER(#{word})) > 0
                     </if>
@@ -92,14 +91,14 @@
             <otherwise>
                 <!--기간-->
                 <if test="startDate != null and !startDate.equals('') and endDate != null and !endDate.equals('')">
-                    AND A.REG_DATE BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD') AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
+                    AND A.MODIFY_DATE BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD') AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
                 </if>
             </otherwise>
         </choose>
-        ORDER BY REG_DATE DESC
+        ORDER BY A.MODIFY_DATE DESC
     </select>
 
-
+    <!-- 상세 조회 -->
     <select id="findById" parameterType="Long"  resultMap="posts">
         SELECT
                A.POSTS_ID
@@ -117,6 +116,7 @@
         AND A.POSTS_ID = #{postsId}
     </select>
 
+    <!-- 게시물 등록 -->
     <insert id="insertPost" parameterType="PostsDto">
         <selectKey resultType="Long" keyProperty="postsId" order="AFTER">
             SELECT POSTS_SEQ.CURRVAL AS "postsId" FROM DUAL

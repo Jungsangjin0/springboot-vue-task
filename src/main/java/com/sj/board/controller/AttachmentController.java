@@ -63,7 +63,8 @@ public class AttachmentController {
 
             AttachmentDto attachmentDto = AttachmentDto.builder()
                                                        .postsId(postsId)
-                                                       .userId(1L)
+                                                       .regUserId(1L)
+                                                       .modifyUserId(1L)
                                                        .originName(files.get(i).getOriginalFilename())
                                                        .saveName(saveName)
                                                        .filePath("path")

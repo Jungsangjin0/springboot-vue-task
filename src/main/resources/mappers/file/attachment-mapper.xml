@@ -8,29 +8,37 @@
     <resultMap id="file" type="AttachmentDto">
         <id column="FILE_ID" property="fileId"/>
         <result column="POSTS_ID" property="postsId"/>
-        <result column="USER_ID" property="userId"/>
+        <result column="REG_USER_ID" property="regUserId"/>
+        <result column="MODIFY_USER_ID" property="modifyUserId"/>
         <result column="ORIGIN_NAME" property="originName"/>
         <result column="SAVE_NAME" property="saveName"/>
         <result column="FILE_PATH" property="filePath"/>
         <result column="FILE_EXT" property="fileExt"/>
         <result column="FILE_SIZE" property="fileSize"/>
         <result column="FILE_REG_DATE" property="fileRegDate"/>
+        <result column="FILE_MODIFY_DATE" property="fileModifyDate"/>
+        <result column="STATUS" property="status"/>
     </resultMap>
-    
+
+    <!-- 게시글 조회 시 collection select query-->
     <select id="findByPostsId" resultMap="file">
         SELECT
                FILE_ID
              , POSTS_ID
-             , USER_ID
+             , REG_USER_ID
+             , MODIFY_USER_ID
              , ORIGIN_NAME
              , SAVE_NAME
              , FILE_PATH
              , FILE_EXT
              , FILE_SIZE
              , FILE_REG_DATE
+             , FILE_MODIFY_DATE
+             , STATUS
         FROM ATTACHMENT
         WHERE POSTS_ID = #{POSTS_ID}
     </select>
+
 
     <insert id="insertFiles" parameterType="java.util.HashMap">
         INSERT INTO ATTACHMENT(
