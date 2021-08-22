@@ -4,7 +4,71 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.sj.board.dao.CommentMapper">
-    <select id="findById">
-        SELECT * FROM COMMENTS
+
+    <resultMap id="comment" type="CommentDto">
+        <id column="COMM_ID" property="commId"/>
+        <result column="REG_USER_ID" property="regUserId"/>
+        <result column="MODIFY_USER_ID" property="modifyUserId"/>
+        <result column="POSTS_ID" property="postsId"/>
+        <result column="CONTENT" property="content"/>
+        <result column="REG_DATE" property="regDate"/>
+        <result column="MODIFY_DATE" property="modifyDate"/>
+        <result column="STATUS" property="status"/>
+    </resultMap>
+
+    <select id="findByPostsId" resultMap="comment" parameterType="Long">
+      SELECT
+              COMM_ID
+            , REG_USER_ID
+            , MODIFY_USER_ID
+            , CONTENT
+            , REG_DATE
+            , MODIFY_DATE
+            , STATUS
+        FROM COMMENTS
+        WHERE STATUS != 'DELETED'
+        AND   POSTS_ID = #{POSTS_ID}
     </select>
+
+
+    <!-- 댓글 추가 -->
+    <insert id="insert" parameterType="CommentDto">
+        INSERT INTO COMMENTS(
+            COMM_ID, REG_USER_ID, MODIFY_USER_ID
+          , POSTS_ID, CONTENT, REG_DATE
+          , MODIFY_DATE, STATUS
+        )
+        VALUES(
+            COMM_SEQ.NEXTVAL, #{regUserId}, #{modifyUserId}
+          , #{postsId}, #{content}, SYSDATE
+          , SYSDATE, DEFAULT
+        )
+    </insert>
+
+    <!-- 댓글 수정 -->
+    <update id="update" parameterType="CommentDto">
+        UPDATE COMMENTS
+        <set>
+            <if test="regUserId != null and !regUserId.equals('')">
+                MODIFY_USER_ID = #{modifyUserId},
+            </if>
+            <if test="content != null">
+                CONTENT = #{content},
+            </if>
+            MODIFY_DATE = SYSDATE,
+            STATUS = 'UPDATED'
+        </set>
+        WHERE COMM_ID = #{commId}
+        AND POSTS_ID = #{postsId}
+    </update>
+    
+    <!-- 댓글 삭제 -->
+    <update id="delete" parameterType="java.util.HashMap">
+        UPDATE COMMENTS
+        SET STATUS = 'DELETED',
+        MODIFY_DATE = SYSDATE
+        WHERE POSTS_ID = #{postsId}
+        AND COMM_ID = #{commId}
+    </update>
+
 </mapper>

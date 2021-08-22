@@ -1,19 +1,23 @@
 package com.sj.board.dto;
 
-import lombok.Data;
+import lombok.*;
 
 import java.sql.Date;
 
-@Data
-public class CommentDto {
 
-    private long commId;
-    private long regUserId;
-    private long modifyUserId;
-    private long postsId;
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CommentDto implements java.io.Serializable{
+
+    private Long commId;
+    private Long regUserId;
+    private Long modifyUserId;
+    private Long postsId;
     private String content;
     private Date regDate;
     private Date modifyDate;
     private String status;
-
 }

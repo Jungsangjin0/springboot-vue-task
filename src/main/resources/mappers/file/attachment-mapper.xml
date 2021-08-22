@@ -109,7 +109,6 @@
             ,#{item.modifyUserId}, #{item.originName}, #{item.saveName}
             ,#{item.filePath}, #{item.fileExt}, #{item.fileSize}
             ,SYSDATE, SYSDATE, DEFAULT )
-
         </foreach>
     </insert>
 
