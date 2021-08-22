@@ -95,7 +95,7 @@
                 </if>
             </otherwise>
         </choose>
-        ORDER BY A.MODIFY_DATE DESC
+        ORDER BY A.REG_DATE DESC
     </select>
 
     <!-- 상세 조회 -->
@@ -133,12 +133,15 @@
             )
     </insert>
 
+    <!-- 게시물 삭제-->
     <update id="deleteById" parameterType="Long">
         UPDATE POSTS
-        SET STATUS = 'DELETED'
+        SET STATUS = 'DELETED',
+        MODIFY_DATE = SYSDATE
         WHERE POSTS_ID = #{postsId}
     </update>
 
+    <!-- 게시물 수정 -->
     <update id="updateById" parameterType="PostsDto">
         UPDATE POSTS
         <set>
@@ -148,6 +151,7 @@
             <if test="content != null">
                 CONTENT = #{content},
             </if>
+            MODIFY_DATE = SYSDATE,
             STATUS = 'UPDATED'
         </set>
         WHERE POSTS_ID = #{postsId}

@@ -48,10 +48,12 @@ public class PostsServiceImpl implements PostsService{
         /* insert post */
         postsMapper.insertPost(posts);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("list", posts.getFiles());
-        map.put("postId", posts.getPostsId());
-        attachmentMapper.insertFiles(map);
+        if(posts.getFiles() != null && posts.getFiles().size() > 0) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("list", posts.getFiles());
+            map.put("postId", posts.getPostsId());
+            attachmentMapper.insertFiles(map);
+        }
 
         return posts.getPostsId();
     }

@@ -37,63 +37,79 @@
              , STATUS
         FROM ATTACHMENT
         WHERE POSTS_ID = #{POSTS_ID}
+        AND STATUS != 'DELETED'
     </select>
 
-
+    <!-- 게시글 등록 시 파일 등록-->
     <insert id="insertFiles" parameterType="java.util.HashMap">
-        INSERT INTO ATTACHMENT(
-                 FILE_ID, POSTS_ID, USER_ID
-               , ORIGIN_NAME, SAVE_NAME, FILE_PATH
-               , FILE_EXT, FILE_SIZE, FILE_REG_DATE
-                    )
-        VALUES
-        <foreach collection="list" item="item" separator=", ">
-            (FILE_SEQ.NEXTVAL, #{postId}, #{item.userId}
-            ,#{item.originName}, #{item.saveName}, #{item.filePath}
-            ,#{item.fileExt}, #{item.fileSize}, SYSDATE)
+        <foreach collection="list" item="item" index="index" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
+            INTO ATTACHMENT(
+                FILE_ID, POSTS_ID, REG_USER_ID
+                , MODIFY_USER_ID, ORIGIN_NAME, SAVE_NAME
+                , FILE_PATH, FILE_EXT, FILE_SIZE
+                , FILE_REG_DATE, FILE_MODIFY_DATE, STATUS
+            )
+            VALUES
+            (GET_ACCESS_ID(), #{postId}, #{item.regUserId}
+            ,#{item.modifyUserId}, #{item.originName}, #{item.saveName}
+            ,#{item.filePath}, #{item.fileExt}, #{item.fileSize}
+            ,SYSDATE, SYSDATE, DEFAULT )
+
         </foreach>
     </insert>
-    
+
+    <!-- 게시글 삭제 시 파일 삭제-->
     <update id="deleteByPostsId" parameterType="Long">
         UPDATE ATTACHMENT
-        SET STATUS = 'DELETED'
+        SET STATUS = 'DELETED',
+        FILE_MODIFY_DATE = SYSDATE
         WHERE POSTS_ID = #{postsId}
     </update>
 
+    <!-- 파일 삭제 -->
     <update id="deleteFile" parameterType="java.util.HashMap">
         UPDATE ATTACHMENT
-        SET STATUS = 'DELETED'
+        SET STATUS = 'DELETED',
+        FILE_MODIFY_DATE = SYSDATE
         WHERE POSTS_ID = #{postsId}
         AND FILE_ID = #{fileId}
     </update>
 
 
+    <!-- 파일 다운로드 -->
     <select id="findById" parameterType="Long" resultMap="file">
-        SELECT
+          SELECT
                FILE_ID
              , POSTS_ID
-             , USER_ID
+             , REG_USER_ID
+             , MODIFY_USER_ID
              , ORIGIN_NAME
              , SAVE_NAME
              , FILE_PATH
              , FILE_EXT
              , FILE_SIZE
              , FILE_REG_DATE
+             , FILE_MODIFY_DATE
+             , STATUS
         FROM ATTACHMENT
         WHERE FILE_ID = #{fileId}
     </select>
-    
+
+    <!-- 파일 추가 등록-->
     <insert id="addFiles" parameterType="java.util.HashMap">
-        INSERT INTO ATTACHMENT(
-        FILE_ID, POSTS_ID, USER_ID
-        , ORIGIN_NAME, SAVE_NAME, FILE_PATH
-        , FILE_EXT, FILE_SIZE, FILE_REG_DATE
-        )
-        VALUES
-        <foreach collection="list" item="item" separator=", ">
-            (FILE_SEQ.NEXTVAL, #{item.postsId}, #{item.userId}
-            ,#{item.originName}, #{item.saveName}, #{item.filePath}
-            ,#{item.fileExt}, #{item.fileSize}, SYSDATE)
+        <foreach collection="list" item="item" index="index" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
+            INTO ATTACHMENT(
+            FILE_ID, POSTS_ID, REG_USER_ID
+            , MODIFY_USER_ID, ORIGIN_NAME, SAVE_NAME
+            , FILE_PATH, FILE_EXT, FILE_SIZE
+            , FILE_REG_DATE, FILE_MODIFY_DATE, STATUS
+            )
+            VALUES
+            (GET_ACCESS_ID(), #{item.postsId}, #{item.regUserId}
+            ,#{item.modifyUserId}, #{item.originName}, #{item.saveName}
+            ,#{item.filePath}, #{item.fileExt}, #{item.fileSize}
+            ,SYSDATE, SYSDATE, DEFAULT )
+
         </foreach>
     </insert>
 

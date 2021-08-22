@@ -50,7 +50,7 @@ public class PostsController {
      * @return
      */
     @PostMapping("/posts")
-    public Long insertPosts(@ModelAttribute PostsDto posts, HttpSession session, @RequestParam(value = "file") List<MultipartFile> file){
+    public Long insertPosts(@ModelAttribute PostsDto posts, HttpSession session, @RequestParam(value = "file", required = false) List<MultipartFile> file){
 
         /* session 정보가져오기 */
 //        MemberDto user = (MemberDto) session.getAttribute("user");
@@ -62,31 +62,29 @@ public class PostsController {
 //        posts.setModifyUserId(user.getUserId());
         posts.setModifyUserId(1L);
 
-        List<AttachmentDto> list = new ArrayList<>();
-        AttachmentDto attachment;
-        for(int i = 0; i < file.size(); i++) {
+        if(file != null && file.size() > 0) {
+            List<AttachmentDto> list = new ArrayList<>();
+            AttachmentDto attachment;
+            for(int i = 0; i < file.size(); i++) {
 
-            String ext = file.get(i).getOriginalFilename().substring(file.get(i).getOriginalFilename().lastIndexOf("."));
-            String saveName = UUID.randomUUID().toString().replace("-", "") + ext;
+                String ext = file.get(i).getOriginalFilename().substring(file.get(i).getOriginalFilename().lastIndexOf("."));
+                String saveName = UUID.randomUUID().toString().replace("-", "") + ext;
 
-            System.out.println("ext = " + ext);
+                System.out.println("ext = " + ext);
 
-            attachment = AttachmentDto.builder()
-                                      .regUserId(posts.getRegUserId())
-                                      .modifyUserId(posts.getRegUserId())
-                                      .originName(file.get(i).getOriginalFilename())
-                                      .saveName(saveName)
-                                      .filePath("path")
-                                      .fileExt(ext)
-                                      .fileSize(file.get(i).getSize())
-                                      .build();
-            list.add(attachment);
-        }
+                attachment = AttachmentDto.builder()
+                                          .regUserId(posts.getRegUserId())
+                                          .modifyUserId(posts.getRegUserId())
+                                          .originName(file.get(i).getOriginalFilename())
+                                          .saveName(saveName)
+                                          .filePath("path")
+                                          .fileExt(ext)
+                                          .fileSize(file.get(i).getSize())
+                                          .build();
+                list.add(attachment);
+            }
 
-        posts.setFiles(list);
-
-        for(AttachmentDto dto : posts.getFiles()) {
-            System.out.println("dto = " + dto);
+            posts.setFiles(list);
         }
 
         return postsService.insertPost(posts);

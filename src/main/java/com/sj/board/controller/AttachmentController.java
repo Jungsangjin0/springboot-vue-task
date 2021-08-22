@@ -51,8 +51,9 @@ public class AttachmentController {
      * @return
      */
     @PostMapping("/posts/{postsId}/files")
-    public String addFiles(@PathVariable long postsId, @RequestParam List<MultipartFile> files) {
+    public String addFiles(@PathVariable long postsId, @RequestParam(value = "files") List<MultipartFile> files) {
 
+        System.out.println("files.size() = " + files.size());
         List<AttachmentDto> list = new ArrayList<>();
         String saveName = "";
         String ext = "";
