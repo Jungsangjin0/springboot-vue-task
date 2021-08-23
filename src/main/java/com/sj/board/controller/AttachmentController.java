@@ -1,11 +1,14 @@
 package com.sj.board.controller;
 
 import com.sj.board.dto.AttachmentDto;
+import com.sj.board.file.FileStore;
 import com.sj.board.service.AttachmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +19,7 @@ import java.util.UUID;
 public class AttachmentController {
 
     private final AttachmentService attachmentService;
+    private final FileStore fileStore;
 
     /**
      * 파일 삭제
@@ -24,11 +28,13 @@ public class AttachmentController {
      * @return
      */
     @DeleteMapping("/posts/{postsId}/files/{fileId}")
-    public String deleteFile(@PathVariable long postsId, @PathVariable long fileId) {
+    public long deleteFile(@PathVariable long postsId, @PathVariable long fileId) {
+        /* db 파일 정보 삭제 및 path */
+        String filePath = attachmentService.deleteFile(postsId, fileId);
+        /* 파일 삭제 */
+        boolean check = fileStore.deleteFile(filePath);
 
-        attachmentService.deleteFile(postsId, fileId);
-
-        return "deleteFile";
+        return fileId;
     }
 
     /**
@@ -51,29 +57,23 @@ public class AttachmentController {
      * @return
      */
     @PostMapping("/posts/{postsId}/files")
-    public String addFiles(@PathVariable long postsId, @RequestParam(value = "files") List<MultipartFile> files) {
+    public String addFiles(@PathVariable long postsId, @RequestParam(value = "files") List<MultipartFile> files, HttpSession session) throws IOException {
 
-        System.out.println("files.size() = " + files.size());
-        List<AttachmentDto> list = new ArrayList<>();
-        String saveName = "";
-        String ext = "";
+        List<AttachmentDto> list = null;
 
-        for(int i = 0; i < files.size(); i++) {
-            ext = files.get(i).getOriginalFilename().substring(files.get(i).getOriginalFilename().lastIndexOf("."));
-            saveName = UUID.randomUUID().toString().replace("-", "") + ext;
+        if(files != null &&!files.isEmpty()) {
+            list = fileStore.storeFiles(files);
 
-            AttachmentDto attachmentDto = AttachmentDto.builder()
-                                                       .postsId(postsId)
-                                                       .regUserId(1L)
-                                                       .modifyUserId(1L)
-                                                       .originName(files.get(i).getOriginalFilename())
-                                                       .saveName(saveName)
-                                                       .filePath("path")
-                                                       .fileExt(ext)
-                                                       .fileSize(files.get(i).getSize())
-                                                        .build();
-            list.add(attachmentDto);
+            if(list != null && list.size() > 0) {
+                for (AttachmentDto attachmentDto : list) {
+
+                    attachmentDto.setRegUserId(1L);
+                    attachmentDto.setModifyUserId(1L);
+                    attachmentDto.setPostsId(postsId);
+                }
             }
+        }
+
 
         attachmentService.addFiles(list);
 

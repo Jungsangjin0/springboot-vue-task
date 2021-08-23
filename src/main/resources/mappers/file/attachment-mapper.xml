@@ -18,6 +18,7 @@
         <result column="FILE_REG_DATE" property="fileRegDate"/>
         <result column="FILE_MODIFY_DATE" property="fileModifyDate"/>
         <result column="STATUS" property="status"/>
+        <result column="CONTENT_TYPE" property="contentType"/>
     </resultMap>
 
     <!-- 게시글 조회 시 collection select query-->
@@ -35,6 +36,7 @@
              , FILE_REG_DATE
              , FILE_MODIFY_DATE
              , STATUS
+             , CONTENT_TYPE
         FROM ATTACHMENT
         WHERE POSTS_ID = #{POSTS_ID}
         AND STATUS != 'DELETED'
@@ -47,13 +49,13 @@
                 FILE_ID, POSTS_ID, REG_USER_ID
                 , MODIFY_USER_ID, ORIGIN_NAME, SAVE_NAME
                 , FILE_PATH, FILE_EXT, FILE_SIZE
-                , FILE_REG_DATE, FILE_MODIFY_DATE, STATUS
+                , FILE_REG_DATE, FILE_MODIFY_DATE, STATUS, CONTENT_TYPE
             )
             VALUES
             (GET_ACCESS_ID(), #{postId}, #{item.regUserId}
             ,#{item.modifyUserId}, #{item.originName}, #{item.saveName}
             ,#{item.filePath}, #{item.fileExt}, #{item.fileSize}
-            ,SYSDATE, SYSDATE, DEFAULT )
+            ,SYSDATE, SYSDATE, DEFAULT, #{item.contentType})
 
         </foreach>
     </insert>
@@ -73,6 +75,9 @@
         FILE_MODIFY_DATE = SYSDATE
         WHERE POSTS_ID = #{postsId}
         AND FILE_ID = #{fileId}
+        <selectKey order="AFTER" resultType="String" keyProperty="filePath" keyColumn="FILE_PATH">
+            SELECT FILE_PATH FROM ATTACHMENT WHERE POSTS_ID = #{postsId} AND FILE_ID = #{fileId}
+        </selectKey>
     </update>
 
 
@@ -91,6 +96,7 @@
              , FILE_REG_DATE
              , FILE_MODIFY_DATE
              , STATUS
+             , CONTENT_TYPE
         FROM ATTACHMENT
         WHERE FILE_ID = #{fileId}
     </select>
@@ -102,13 +108,13 @@
             FILE_ID, POSTS_ID, REG_USER_ID
             , MODIFY_USER_ID, ORIGIN_NAME, SAVE_NAME
             , FILE_PATH, FILE_EXT, FILE_SIZE
-            , FILE_REG_DATE, FILE_MODIFY_DATE, STATUS
+            , FILE_REG_DATE, FILE_MODIFY_DATE, STATUS, CONTENT_TYPE
             )
             VALUES
             (GET_ACCESS_ID(), #{item.postsId}, #{item.regUserId}
             ,#{item.modifyUserId}, #{item.originName}, #{item.saveName}
             ,#{item.filePath}, #{item.fileExt}, #{item.fileSize}
-            ,SYSDATE, SYSDATE, DEFAULT )
+            ,SYSDATE, SYSDATE, DEFAULT, #{item.contentType} )
         </foreach>
     </insert>
 

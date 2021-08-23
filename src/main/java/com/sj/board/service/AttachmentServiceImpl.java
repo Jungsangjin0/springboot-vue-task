@@ -19,9 +19,7 @@ public class AttachmentServiceImpl implements  AttachmentService{
 
     /* 파일 삭제 */
     @Override
-    public void deleteFile(long postsId, long fileId) {
-
-        /* 파일 물리 삭제 로직*/
+    public String deleteFile(long postsId, long fileId) {
 
         Map<String, Object> map = new HashMap<>();
         map.put("postsId", postsId);
@@ -29,6 +27,7 @@ public class AttachmentServiceImpl implements  AttachmentService{
 
         attachmentMapper.deleteFile(map);
 
+        return (String)map.get("filePath");
 
     }
 

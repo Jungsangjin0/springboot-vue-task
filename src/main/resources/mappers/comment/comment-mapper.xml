@@ -31,7 +31,7 @@
     </select>
 
 
-    <!-- 댓글 추가 -->
+    <!-- 댓글 등록 -->
     <insert id="insert" parameterType="CommentDto">
         INSERT INTO COMMENTS(
             COMM_ID, REG_USER_ID, MODIFY_USER_ID
@@ -43,6 +43,9 @@
           , #{postsId}, #{content}, SYSDATE
           , SYSDATE, DEFAULT
         )
+        <selectKey resultType="Long" order="AFTER" keyProperty="commId" keyColumn="SEQ">
+            SELECT COMM_SEQ.CURRVAL AS SEQ FROM DUAL
+        </selectKey>
     </insert>
 
     <!-- 댓글 수정 -->

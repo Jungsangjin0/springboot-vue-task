@@ -27,7 +27,7 @@ public class CommentController {
      * @return
      */
     @PostMapping("/posts/{postsId}/comm")
-    public String insertComment(@PathVariable long postsId, @RequestBody CommentDto comment, HttpSession session) {
+    public long insertComment(@PathVariable long postsId, @RequestBody CommentDto comment, HttpSession session) {
 //        MemberDto member = (MemberDto) session.getAttribute("user");
 //        Long userId = member.getUserId();
 
@@ -35,9 +35,9 @@ public class CommentController {
         comment.setModifyUserId(1L);
         comment.setRegUserId(1L);
 
-        commentService.insert(comment);
+        long number = commentService.insert(comment);
 
-        return "댓글 등록";
+        return number;
     }
 
     /**

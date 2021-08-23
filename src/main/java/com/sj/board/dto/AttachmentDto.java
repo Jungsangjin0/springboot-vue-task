@@ -21,4 +21,6 @@ public class AttachmentDto implements java.io.Serializable{
     private Date fileRegDate;
     private Date fileModifyDate;
     private String status;
+
+    private String contentType;
 }
