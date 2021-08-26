@@ -26,11 +26,6 @@ public class PostsServiceImpl implements PostsService{
     /* 전체 조회/조건 조회 */
     @Override
     public List<PostsDto> findList(SearchDto search) {
-        /* endDate null 방지 */
-        if(search.getEndDate() == null) {
-            String format = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            search.setEndDate(format);
-        }
 
         return postsMapper.findList(search);
     }

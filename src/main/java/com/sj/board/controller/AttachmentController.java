@@ -30,6 +30,18 @@ public class AttachmentController {
     private final AttachmentService attachmentService;
     private final FileStore fileStore;
 
+
+    /**
+     * 파일 조회
+     * @param postsId 게시물 번호
+     * @return 파일 리스트
+     */
+    @GetMapping("/posts/{postsId}/files")
+    public List<AttachmentDto> postsId(@PathVariable long postsId) {
+
+        return attachmentService.findByPostsId(postsId);
+    }
+
     /**
      * 파일 삭제
      * @param postsId
@@ -60,13 +72,8 @@ public class AttachmentController {
         AttachmentDto file = attachmentService.findById(fileId);
 
         UrlResource resource = new UrlResource("file:" + file.getFilePath());
-        System.out.println("file.getFilePath() = " + file.getFilePath());
-        System.out.println("file.getOriginName() = " + file.getOriginName());
-
-
         String encodeUploadFileName = UriUtils.encode(file.getOriginName(), StandardCharsets.UTF_8);
         String contentDisposition = "attachment; filename=\"" + encodeUploadFileName + "\"";
-
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)

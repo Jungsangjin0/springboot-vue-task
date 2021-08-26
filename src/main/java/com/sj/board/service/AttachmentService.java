@@ -6,6 +6,9 @@ import java.util.List;
 
 public interface AttachmentService {
 
+    /* 파일 리스트 조회 */
+    public List<AttachmentDto> findByPostsId(long postsId);
+
     /* 파일 삭제 */
     String deleteFile(long postsId, long fileId);
 

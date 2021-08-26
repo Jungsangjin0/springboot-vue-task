@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -17,8 +18,12 @@ import java.util.Set;
 public class CommentController {
 
     private final CommentService commentService;
-    private final CommentMapper commentMapper;
 
+
+    @GetMapping("/posts/{postsId}/comm")
+    public List<CommentDto> selectComment(@PathVariable long postsId) {
+        return commentService.selectList(postsId);
+    }
     /**
      * 댓글 등록
      *
@@ -35,9 +40,7 @@ public class CommentController {
         comment.setModifyUserId(1L);
         comment.setRegUserId(1L);
 
-        long number = commentService.insert(comment);
-
-        return number;
+        return commentService.insert(comment);
     }
 
     /**

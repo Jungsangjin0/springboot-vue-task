@@ -17,21 +17,24 @@
         <result column="MODIFY_NAME" property="modifyName"/>
     </resultMap>
 
-    <resultMap id="post" type="PostsDto" extends="posts">
-        <collection property="files" javaType="ArrayList" column="POSTS_ID" ofType="AttachmentDto" select="com.sj.board.dao.AttachmentMapper.findByPostsId" />
+    <resultMap id="editComment" extends="posts" type="PostsDto">
         <collection property="comments" javaType="ArrayList" column="POSTS_ID" ofType="CommentDto" select="com.sj.board.dao.CommentMapper.findByPostsId"/>
+    </resultMap>
+
+    <resultMap id="postAll" type="PostsDto" extends="editComment">
+        <collection property="files" javaType="ArrayList" column="POSTS_ID" ofType="AttachmentDto" select="com.sj.board.dao.AttachmentMapper.findByPostsId" />
     </resultMap>
 
 
 
     <!-- 전체 조회 -->
-    <select id="findList" resultMap="posts" parameterType="SearchDto">
+    <select id="findList" resultMap="editComment" parameterType="SearchDto">
         SELECT
                A.POSTS_ID
              , B.NAME AS "REG_NAME"
              , C.NAME AS "MODIFY_NAME"
              , A.TITLE
-             , A.CONTENT
+             , NVL(A.CONTENT, '') AS "CONTENT"
              , A.REG_DATE
              , A.MODIFY_DATE
              , A.STATUS
@@ -103,13 +106,13 @@
     </select>
 
     <!-- 상세 조회 -->
-    <select id="findById" parameterType="Long"  resultMap="post">
+    <select id="findById" parameterType="Long"  resultMap="postAll">
         SELECT
                A.POSTS_ID
              , B.NAME AS "REG_NAME"
              , C.NAME AS "MODIFY_NAME"
              , A.TITLE
-             , A.CONTENT
+             , NVL(A.CONTENT, '') AS "CONTENT"
              , A.REG_DATE
              , A.MODIFY_DATE
              , A.STATUS

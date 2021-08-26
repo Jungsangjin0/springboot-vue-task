@@ -20,6 +20,13 @@ public class AttachmentServiceImpl implements  AttachmentService{
     /* file root */
     private final FileStore fileStore;
 
+    /* 파일 조회 */
+    @Override
+    public List<AttachmentDto> findByPostsId(long postsId) {
+
+        return attachmentMapper.findByPostsId(postsId);
+    }
+
     /* 파일 삭제 */
     @Override
     public String deleteFile(long postsId, long fileId) {

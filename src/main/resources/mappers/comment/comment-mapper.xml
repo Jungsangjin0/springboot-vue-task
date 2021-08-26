@@ -14,20 +14,25 @@
         <result column="REG_DATE" property="regDate"/>
         <result column="MODIFY_DATE" property="modifyDate"/>
         <result column="STATUS" property="status"/>
+        <result column="REG_NAME" property="regName"/>
+        <result column="MODIFY_NAME" property="modifyName"/>
     </resultMap>
 
     <select id="findByPostsId" resultMap="comment" parameterType="Long">
       SELECT
-              COMM_ID
-            , REG_USER_ID
-            , MODIFY_USER_ID
-            , CONTENT
-            , REG_DATE
-            , MODIFY_DATE
-            , STATUS
-        FROM COMMENTS
-        WHERE STATUS != 'DELETED'
-        AND   POSTS_ID = #{POSTS_ID}
+              A.COMM_ID
+            , B.NAME AS "REG_NAME"
+            , C.NAME AS "MODIFY_NAME"
+            , A.CONTENT
+            , A.REG_DATE
+            , A.MODIFY_DATE
+            , A.STATUS
+        FROM COMMENTS A
+        LEFT JOIN MEMBER B ON (A.REG_USER_ID = B.USER_ID)
+        LEFT JOIN MEMBER C ON (A.MODIFY_USER_ID = C.USER_ID)
+        WHERE A.STATUS != 'DELETED'
+        AND   A.POSTS_ID = #{POSTS_ID}
+        ORDER BY A.MODIFY_DATE DESC
     </select>
 
 

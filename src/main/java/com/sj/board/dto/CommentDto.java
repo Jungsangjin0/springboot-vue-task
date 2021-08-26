@@ -20,4 +20,7 @@ public class CommentDto implements java.io.Serializable{
     private Date regDate;
     private Date modifyDate;
     private String status;
+
+    private String modifyName;
+    private String regName;
 }

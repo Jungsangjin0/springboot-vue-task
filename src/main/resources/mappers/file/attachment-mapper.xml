@@ -40,6 +40,7 @@
         FROM ATTACHMENT
         WHERE POSTS_ID = #{POSTS_ID}
         AND STATUS != 'DELETED'
+        ORDER BY FILE_MODIFY_DATE DESC
     </select>
 
     <!-- 게시글 등록 시 파일 등록-->

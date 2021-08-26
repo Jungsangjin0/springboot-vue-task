@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -13,6 +14,13 @@ import java.util.Map;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentMapper commentMapper;
+
+    /* 댓글 조회 */
+    @Override
+    public List<CommentDto> selectList(long postsId) {
+
+        return commentMapper.findByPostsId(postsId);
+    }
 
     /* 댓글 등록 */
     @Override
