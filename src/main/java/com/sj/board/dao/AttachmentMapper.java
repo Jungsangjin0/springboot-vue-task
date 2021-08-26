@@ -25,4 +25,6 @@ public interface AttachmentMapper {
     /* 파일 추가 */
     void addFiles(Map<String, Object> map);
 
+    /* 파일 리스트 조회 */
+    List<AttachmentDto> findByPostsId(long postsId);
 }

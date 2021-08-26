@@ -1,12 +1,14 @@
 package com.sj.board.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.sql.Date;
 
-@Data
 @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AttachmentDto implements java.io.Serializable{
 
     private long fileId;

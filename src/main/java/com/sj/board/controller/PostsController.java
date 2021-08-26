@@ -7,11 +7,15 @@ import com.sj.board.file.FileStore;
 import com.sj.board.service.PostsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sun.misc.Request;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.List;
 
 @RestController
@@ -41,7 +45,7 @@ public class PostsController {
      */
     @GetMapping("/posts/{postsId}")
     public PostsDto posts(@PathVariable Long postsId) {
-
+            System.out.println("리스트 상세 조회입니다.");
         return postsService.findById(postsId);
     }
 
@@ -51,7 +55,7 @@ public class PostsController {
      * @return
      */
     @PostMapping("/posts")
-    public Long insertPosts(@ModelAttribute PostsDto posts, HttpSession session, @RequestParam(value = "file", required = false) List<MultipartFile> file) throws IOException {
+    public Long insertPosts(@ModelAttribute PostsDto posts, HttpSession session,HttpServletRequest request, @RequestParam(value = "file", required = false) List<MultipartFile> file) throws IOException {
 
         /* session 정보가져오기 */
 
@@ -66,10 +70,17 @@ public class PostsController {
 
 
         if(file!= null && !file.isEmpty()){
+            String[] fileName = new String[file.size()];
+            if(request.getHeader("User-Agent").contains("Mac")) {
+                for (int i = 0; i < file.size(); i++) {
+                    fileName[i] = Normalizer.normalize(file.get(i).getOriginalFilename(), Normalizer.Form.NFC);
+                }
+            }
             List<AttachmentDto> files = fileStore.storeFiles(file);
-            for (AttachmentDto attachmentDto : files) {
-                attachmentDto.setRegUserId(posts.getRegUserId());
-                attachmentDto.setModifyUserId(posts.getModifyUserId());
+            for(int i = 0; i < files.size(); i++) {
+                files.get(i).setRegUserId(posts.getRegUserId());
+                files.get(i).setModifyUserId(posts.getModifyUserId());
+                files.get(i).setOriginName(fileName[i]);
             }
             posts.setFiles(files);
         }
@@ -87,11 +98,7 @@ public class PostsController {
      */
     @PutMapping("/posts/{postsId}")
     public String updatePosts(@PathVariable long postsId, @RequestBody PostsDto posts) {
-        System.out.println("postsId = " + postsId);
-        System.out.println("posts = " + posts);
-
         postsService.updateById(postsId, posts);
-
         return "updatePosts";
     }
 
@@ -102,8 +109,9 @@ public class PostsController {
      */
     @DeleteMapping("/posts/{postsId}")
     public Long deletePosts(@PathVariable Long postsId) {
+        List<AttachmentDto> files = postsService.deleteById(postsId);
 
-        postsService.deleteById(postsId);
+        fileStore.deleteFiles(files);
 
         return postsId;
     }

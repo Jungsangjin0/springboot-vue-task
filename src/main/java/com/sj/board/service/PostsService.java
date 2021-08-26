@@ -1,5 +1,6 @@
 package com.sj.board.service;
 
+import com.sj.board.dto.AttachmentDto;
 import com.sj.board.dto.PostsDto;
 import com.sj.board.dto.SearchDto;
 
@@ -17,7 +18,7 @@ public interface PostsService {
     Long insertPost(PostsDto posts);
 
     /* 삭제 */
-    void deleteById(Long postsId);
+    List<AttachmentDto> deleteById(Long postsId);
 
     /* 수정 */
     Long updateById(Long postsId, PostsDto posts);

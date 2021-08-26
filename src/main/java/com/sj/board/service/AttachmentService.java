@@ -13,5 +13,5 @@ public interface AttachmentService {
     AttachmentDto findById(long fileId);
 
     /* 파일 등록 */
-    void addFiles(List<AttachmentDto> list);
+    List<AttachmentDto> addFiles(List<AttachmentDto> list, long postsId);
 }

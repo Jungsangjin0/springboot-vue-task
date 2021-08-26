@@ -99,4 +99,18 @@ public class FileStore {
         return file.delete();
     }
 
+    public boolean deleteFiles(List<AttachmentDto> files) {
+
+        int cnt = 0;
+        for (AttachmentDto file : files) {
+            if(deleteFile(file.getFilePath())) {
+                cnt++;
+            }
+        }
+        if(cnt == files.size()) {
+            return true;
+        }
+        return false;
+    }
+
 }
