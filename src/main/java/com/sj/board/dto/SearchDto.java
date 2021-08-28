@@ -2,6 +2,8 @@ package com.sj.board.dto;
 
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,4 +14,5 @@ public class SearchDto implements java.io.Serializable{
     private String word;
     private String startDate;
     private String endDate;
+
 }

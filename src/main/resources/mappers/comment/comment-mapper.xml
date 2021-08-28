@@ -27,6 +27,8 @@
             , A.REG_DATE
             , A.MODIFY_DATE
             , A.STATUS
+            , A.REG_USER_ID
+            , A.MODIFY_USER_ID
         FROM COMMENTS A
         LEFT JOIN MEMBER B ON (A.REG_USER_ID = B.USER_ID)
         LEFT JOIN MEMBER C ON (A.MODIFY_USER_ID = C.USER_ID)

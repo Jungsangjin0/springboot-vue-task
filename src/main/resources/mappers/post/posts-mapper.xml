@@ -117,8 +117,8 @@
              , A.MODIFY_DATE
              , A.STATUS
         FROM POSTS A
-        JOIN MEMBER B ON(A.REG_USER_ID = B.USER_ID)
-        JOIN MEMBER C ON(A.MODIFY_USER_ID = C.USER_ID)
+        LEFT OUTER JOIN MEMBER B ON(A.REG_USER_ID = B.USER_ID)
+        LEFT OUTER JOIN MEMBER C ON(A.MODIFY_USER_ID = C.USER_ID)
         WHERE A.STATUS != 'DELETED'
         AND A.POSTS_ID = #{postsId}
     </select>
@@ -146,6 +146,7 @@
         SET STATUS = 'DELETED',
         MODIFY_DATE = SYSDATE
         WHERE POSTS_ID = #{postsId}
+        <!-- 수정자 -->
     </update>
 
     <!-- 게시물 수정 -->
@@ -158,6 +159,7 @@
             <if test="content != null">
                 CONTENT = #{content},
             </if>
+            <!-- 수정자-->
             MODIFY_DATE = SYSDATE,
             STATUS = 'UPDATED'
         </set>

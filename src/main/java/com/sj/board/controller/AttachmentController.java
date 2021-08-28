@@ -50,9 +50,6 @@ public class AttachmentController {
      */
     @DeleteMapping("/posts/{postsId}/files/{fileId}")
     public long deleteFile(@PathVariable long postsId, @PathVariable long fileId) {
-        System.out.println("postsId = " + postsId);
-        System.out.println("fileId = " + fileId);
-        System.out.println("파일 삭ㅈ ㅔ메소드입니다.~~~~~");
         /* db 파일 정보 삭제 및 path */
         String filePath = attachmentService.deleteFile(postsId, fileId);
         /* 파일 삭제  service layer */
@@ -96,7 +93,7 @@ public class AttachmentController {
             for (int i = 0; i < files.size(); i++) {
                 fileName[i] = Normalizer.normalize(files.get(i).getOriginalFilename(), Normalizer.Form.NFC);
             }
-        }
+        } //logic
 
         List<AttachmentDto> list = null;
 

@@ -34,10 +34,7 @@ public class PostsController {
      */
     @GetMapping("/posts")
     public List<PostsDto> postsList(@ModelAttribute SearchDto search) {
-        System.out.println("search.getKeyword() = " + search.getKeyword());
-        System.out.println("search.getWord() = " + search.getWord());
-        System.out.println("search.getStartDate() = " + search.getStartDate());
-        System.out.println("search.getEndDate() = " + search.getEndDate());
+
       return postsService.findList(search);
     }
 

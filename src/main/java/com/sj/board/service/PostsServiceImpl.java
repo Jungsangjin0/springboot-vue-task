@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +28,14 @@ public class PostsServiceImpl implements PostsService{
     /* 전체 조회/조건 조회 */
     @Override
     public List<PostsDto> findList(SearchDto search) {
+        /* startDate endDate null 방지 */ //client
+        if(search.getStartDate() != null && !search.getStartDate().equals("")) {
+            if((search.getEndDate() == null || search.getEndDate().equals(""))) {
+                String format = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                YearMonth month = YearMonth.from(LocalDate.parse(format, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                search.setEndDate(month.atEndOfMonth().toString());
+            }
+        }
 
         return postsMapper.findList(search);
     }

@@ -67,6 +67,7 @@
         SET STATUS = 'DELETED',
         FILE_MODIFY_DATE = SYSDATE
         WHERE POSTS_ID = #{postsId}
+        <!-- 수정자 -->
     </update>
 
     <!-- 파일 삭제 -->
